@@ -1,0 +1,18 @@
+- name: copy mongodb repo
+  ansible.builtin.copy:
+    src: mongodb.repo
+    dest: /etc/yum.repos.d/mongo.repo
+- name: Install MongoDB client
+  ansible.builtin.package:
+    name: mongodb-mongosh
+    state: present
+
+- name: get the entries count
+  ansible.builtin.command: mongosh --host mongodb.satyadaws.online --quiet --eval 'db=db.getSiblingDB("catalogue");db.products.countDocuments()'
+  register: entries_count
+  when: component==catalogue
+
+- name: load {{component}} data 
+  ansible.builtin.shell: mongosh --host mongodb.satyadaws.online < /app/db/master-data.js
+  when: entries_count.stdout == "0" # keep double quotes
+- name: Start and Enable catalogue Service

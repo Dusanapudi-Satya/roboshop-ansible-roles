@@ -1,0 +1,12 @@
+- name: Disable current module # if module is not available then use shell cmd 
+  ansible.builtin.command: dnf module disable nodejs -y 
+- name: Enable nodejs 20 module
+  ansible.builtin.command: dnf module enable nodejs:20 -y
+- name: Install NodeJS
+  ansible.builtin.package:
+    name: nodejs 
+    state: present
+- name: install dependencies
+  ansible.builtin.command: npm install
+  args:
+    chdir: /app 
